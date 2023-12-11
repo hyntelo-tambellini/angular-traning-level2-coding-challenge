@@ -1,10 +1,11 @@
 import { Injectable } from "@angular/core";
+import * as APIFootball from "../types/api-football";
 
 @Injectable({
   providedIn: "root"
 })
 export class LocalStorageService {
-  read(key: string): object | null {
+  read(key: string): APIFootball.Response | null {
     const item = localStorage.getItem(btoa(key));
 
     if (item === null) {
@@ -14,7 +15,7 @@ export class LocalStorageService {
     return JSON.parse(item);
   }
 
-  write(key: string, data: object) {
+  write(key: string, data: APIFootball.Response) {
     localStorage.setItem(btoa(key), JSON.stringify(data));
   }
 }

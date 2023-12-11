@@ -1,10 +1,11 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, of, tap } from "rxjs";
+import { Observable, map, of, tap } from "rxjs";
 import { environment } from "src/environments/environment";
 import { COUNTRIES } from "../data/countries";
 import { LocalStorageService } from "./localstorage.service";
 import { LEAGUES_ID } from "../data/leagues";
+import * as APIFootball from "../types/api-football";
 
 @Injectable({
   providedIn: "root"
@@ -23,7 +24,7 @@ export class FootballService {
     private localStorage: LocalStorageService
   ) {}
 
-  get(path: string, params?: HttpParams, useCache: "hourly" | "daily" = "daily"): Observable<object> {
+  get(path: string, params?: HttpParams, useCache: "hourly" | "daily" = "daily"): Observable<APIFootball.Response> {
     const endpoint = this.apiUrl + path;
 
     let cacheKey = endpoint;
@@ -43,7 +44,7 @@ export class FootballService {
     }
 
     return this.http
-      .get(endpoint, {
+      .get<APIFootball.Response>(endpoint, {
         headers: { "x-rapidapi-key": this.apiKey, "x-rapidapi-host": "v3.football.api-sports.io" },
         params
       })
@@ -76,7 +77,10 @@ export class FootballService {
       }
     }
 
-    return this.get(this.apiPaths.leagues, new HttpParams({ fromObject: { season, code: countryCode, id: leagueId } }));
+    return this.get(
+      this.apiPaths.leagues,
+      new HttpParams({ fromObject: { season, code: countryCode, id: leagueId } })
+    ).pipe(map((res: any) => res.response[0]));
   }
 
   getCurrentSeasonLeagues(countryCode: keyof typeof COUNTRIES) {
