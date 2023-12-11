@@ -1,4 +1,4 @@
-export const LEAGUES_ID_2023 = {
+export const LEAGUES_ID = {
   premier_league: 39,
   la_liga: 140,
   ligue_1: 61,

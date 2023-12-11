@@ -13,6 +13,6 @@ export class AppComponent implements OnInit {
   constructor(private football: FootballService) {}
 
   ngOnInit(): void {
-    this.football.getSeasons().subscribe();
+    this.football.getCurrentSeasonLeagues("IT").subscribe();
   }
 }
