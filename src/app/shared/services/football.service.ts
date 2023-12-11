@@ -14,7 +14,7 @@ export class FootballService {
   private apiUrl = environment.apiUrl;
   private apiKey = environment.apiKey;
 
-  private apiPaths = { leagues: "/leagues", seasons: "/leagues/seasons" } as const;
+  private apiPaths = { leagues: "/leagues", seasons: "/leagues/seasons", standings: "/standings" } as const;
 
   private currentHour = new Date().getHours();
   private currentYear = new Date().getFullYear();
@@ -48,14 +48,35 @@ export class FootballService {
         headers: { "x-rapidapi-key": this.apiKey, "x-rapidapi-host": "v3.football.api-sports.io" },
         params
       })
-      .pipe(tap((res) => this.localStorage.write(cacheKey, res)));
+      .pipe(
+        tap((res) => {
+          if (res.errors?.length) {
+            console.error(res.errors);
+          }
+        }),
+        tap((res) => this.localStorage.write(cacheKey, res))
+      );
   }
 
   getSeasons() {
     return this.get(this.apiPaths.seasons);
   }
 
-  getLeagues(season: number, countryCode: keyof typeof COUNTRIES) {
+  getLeagues(leagueId: number, countryCode: keyof typeof COUNTRIES) {
+    return this.get(
+      this.apiPaths.leagues,
+      new HttpParams({ fromObject: { season: this.currentYear, code: countryCode, id: leagueId } })
+    ).pipe(map((res) => (res.response ? res.response[0] : [])));
+  }
+
+  getLeagueStandings(leagueId: number) {
+    return this.get(
+      this.apiPaths.standings,
+      new HttpParams({ fromObject: { season: this.currentYear, league: leagueId } })
+    );
+  }
+
+  getLeagueFromCountry(countryCode: string) {
     let leagueId: number = LEAGUES_ID.serie_a;
 
     switch (countryCode) {
@@ -63,27 +84,23 @@ export class FootballService {
         leagueId = LEAGUES_ID.la_liga;
         break;
       }
+
       case "DE": {
         leagueId = LEAGUES_ID.bundesliga;
         break;
       }
+
       case "FR": {
         leagueId = LEAGUES_ID.ligue_1;
         break;
       }
+
       case "EN": {
         leagueId = LEAGUES_ID.premier_league;
         break;
       }
     }
 
-    return this.get(
-      this.apiPaths.leagues,
-      new HttpParams({ fromObject: { season, code: countryCode, id: leagueId } })
-    ).pipe(map((res: any) => res.response[0]));
-  }
-
-  getCurrentSeasonLeagues(countryCode: keyof typeof COUNTRIES) {
-    return this.getLeagues(this.currentYear, countryCode);
+    return leagueId;
   }
 }

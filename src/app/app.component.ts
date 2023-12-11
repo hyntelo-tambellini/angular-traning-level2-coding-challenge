@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
+import { MatTabChangeEvent } from "@angular/material/tabs";
+import { BehaviorSubject, Subject, Subscription } from "rxjs";
 import { COUNTRIES } from "./shared/data/countries";
 import { FootballService } from "./shared/services/football.service";
-import { MatTabChangeEvent } from "@angular/material/tabs";
-import { BehaviorSubject, Observable, Subject, Subscriber, Subscription, takeUntil } from "rxjs";
 
 @Component({
   selector: "app-root",
@@ -11,7 +11,7 @@ import { BehaviorSubject, Observable, Subject, Subscriber, Subscription, takeUnt
 })
 export class AppComponent implements OnInit, OnDestroy {
   countryList = Object.entries(COUNTRIES);
-  leagues = new BehaviorSubject<object>([]);
+  leagueStandings = new BehaviorSubject<object>([]);
 
   private sub: Subscription | null = null;
   private destroy$ = new Subject<boolean>();
@@ -19,15 +19,23 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(private football: FootballService) {}
 
   ngOnInit(): void {
-    this.football.getCurrentSeasonLeagues("IT").pipe(takeUntil(this.destroy$)).subscribe();
+    const countryCode = this.countryList[0][0];
+
+    this.retrieveLeagueStanding(countryCode);
   }
 
   tabChanged($event: MatTabChangeEvent) {
-    const countryCode = this.countryList[$event.index][0] as keyof typeof COUNTRIES;
+    const countryCode = this.countryList[$event.index][0];
 
-    this.sub = this.football.getCurrentSeasonLeagues(countryCode).subscribe((res) => {
+    this.retrieveLeagueStanding(countryCode);
+  }
+
+  retrieveLeagueStanding(countryCode: string) {
+    const leagueId = this.football.getLeagueFromCountry(countryCode);
+
+    this.sub = this.football.getLeagueStandings(leagueId).subscribe((res) => {
       console.log(res);
-      this.leagues.next(res);
+      this.leagueStandings.next(res);
     });
   }
 
@@ -35,5 +43,8 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.sub) {
       this.sub.unsubscribe();
     }
+
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 }
