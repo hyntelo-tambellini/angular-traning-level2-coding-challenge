@@ -7,6 +7,7 @@ import { HttpClientModule } from "@angular/common/http";
 import { MatTabsModule } from "@angular/material/tabs";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatCardModule } from "@angular/material/card";
+import { MatTableModule } from "@angular/material/table";
 
 @NgModule({
   declarations: [AppComponent],
@@ -17,7 +18,8 @@ import { MatCardModule } from "@angular/material/card";
     HttpClientModule,
     MatTabsModule,
     MatToolbarModule,
-    MatCardModule
+    MatCardModule,
+    MatTableModule
   ],
   providers: [],
   bootstrap: [AppComponent]

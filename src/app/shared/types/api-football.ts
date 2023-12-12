@@ -4,13 +4,13 @@ export interface Response {
   errors?: null[] | null;
   results: number;
   paging: Paging;
-  response?: ResponseEntity[] | null;
+  response?: ResponsePayload[] | null;
 }
 
 export interface Parameters {
-  season: string;
-  code: string;
-  id: string;
+  season?: string;
+  code?: string;
+  id?: string;
 }
 
 export interface Paging {
@@ -18,7 +18,7 @@ export interface Paging {
   total: number;
 }
 
-export interface ResponseEntity {
+export interface ResponsePayload {
   league: League;
   country: Country;
   seasons?: SeasonsEntity[] | null;
@@ -29,7 +29,50 @@ export interface League {
   name: string;
   type: string;
   logo: string;
+  country?: string;
+  flag?: string;
+  season?: number;
+  standings?: Array<Standing[]>;
 }
+
+export interface Standing {
+  rank: number;
+  team: Team;
+  points: number;
+  goalsDiff: number;
+  group: string;
+  form: string;
+  status: string;
+  description: null | string;
+  all: All;
+  home: All;
+  away: All;
+  update: Date;
+}
+
+export interface Goals {
+  for: number;
+  against: number;
+}
+
+export enum Status {
+  Same = "same"
+}
+
+export interface Team {
+  id: number;
+  name: string;
+  logo: string;
+}
+
+export interface All {
+  played: number;
+  win: number;
+  draw: number;
+  lose: number;
+  goals: Goals;
+}
+
 export interface Country {
   name: string;
   code: string;
