@@ -109,13 +109,10 @@ export class FootballService {
     return leagueId;
   }
 
-  getLastTeamResults(teamId: number) {
+  getLastTeamResults(teamId: number, last = 10) {
     return this.get(
       this.apiPaths.fixtures,
-      new HttpParams({ fromObject: { season: this.currentYear, team: teamId } })
-    ).pipe(
-      map((res) => res.response ?? []),
-      map((res) => res.slice(0, 10))
-    );
+      new HttpParams({ fromObject: { season: this.currentYear, last, team: teamId } })
+    ).pipe(map((res) => res.response ?? []));
   }
 }

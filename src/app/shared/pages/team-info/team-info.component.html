@@ -4,10 +4,18 @@
   </ng-container>
 
   <ng-template #loading>
-    <div style="display: flex; justify-content: center; padding: 50px">
+    <div style="display: flex; justify-content: center; margin-top: 150px">
       <mat-spinner></mat-spinner>
     </div>
   </ng-template>
 </div>
 
-<button mat-raised-button color="primary" tabindex="0" (click)="goBack()" (keyup.enter)="goBack()">Back</button>
+<button
+  mat-raised-button
+  color="primary"
+  tabindex="0"
+  (click)="goBack()"
+  (keyup.enter)="goBack()"
+  style="position: absolute; z-index: 10; bottom: 100px; left: 10%"
+  >Back</button
+>
