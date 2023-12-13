@@ -1,10 +1,9 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { MatTableModule } from "@angular/material/table";
-import { Standing, Team } from "../../types/api-football";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { MatRippleModule } from "@angular/material/core";
+import { MatTableModule } from "@angular/material/table";
 import { MatTooltipModule } from "@angular/material/tooltip";
-import { FootballService } from "../../services/football.service";
+import { Standing, Team } from "../../types/api-football";
 
 @Component({
   selector: "app-scores-table",

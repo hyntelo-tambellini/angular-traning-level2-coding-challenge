@@ -1,8 +1,8 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { CommonModule, Location } from "@angular/common";
 import { FootballService } from "../../services/football.service";
 import { ActivatedRoute } from "@angular/router";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Subject, Subscription, takeUntil } from "rxjs";
 import { ResponsePayload } from "../../types/api-football";
 import { TeamInfoTableComponent } from "../../components/team-info-table/team-info-table.component";
 import { MatButtonModule } from "@angular/material/button";
@@ -15,8 +15,11 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
   templateUrl: "./team-info.component.html",
   styleUrls: ["./team-info.component.scss"]
 })
-export class TeamInfoComponent implements OnInit {
+export class TeamInfoComponent implements OnInit, OnDestroy {
   teamData$ = new BehaviorSubject<ResponsePayload[] | null>(null);
+
+  private subs: Subscription[] = [];
+  private destroy$ = new Subject<boolean>();
 
   constructor(
     private location: Location,
@@ -30,10 +33,22 @@ export class TeamInfoComponent implements OnInit {
     if (param) {
       const teamId = parseInt(param);
 
-      this.football.getLastTeamResults(teamId).subscribe((data) => {
-        this.teamData$.next(data);
-      });
+      const sub = this.football
+        .getLastTeamResults(teamId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((data) => this.teamData$.next(data));
+
+      this.subs.push(sub);
     }
+  }
+
+  ngOnDestroy() {
+    if (this.subs.length > 0) {
+      this.subs.forEach((sub) => sub.unsubscribe());
+    }
+
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
   goBack() {

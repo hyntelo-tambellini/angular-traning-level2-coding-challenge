@@ -19,7 +19,7 @@ export class LeaguesComponent implements OnInit, OnDestroy {
   dataSource = new BehaviorSubject<Standing[]>([]);
   unsupportedCountry = false;
 
-  private sub: Subscription | null = null;
+  private subs: Subscription[] = [];
   private destroy$ = new Subject<boolean>();
 
   constructor(
@@ -29,12 +29,12 @@ export class LeaguesComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe(() => this.loadLeagueData());
+    this.subs.push(this.route.params.pipe(takeUntil(this.destroy$)).subscribe(() => this.loadLeagueData()));
   }
 
   ngOnDestroy() {
-    if (this.sub) {
-      this.sub.unsubscribe();
+    if (this.subs.length > 0) {
+      this.subs.forEach((sub) => sub.unsubscribe());
     }
 
     this.destroy$.next(true);
@@ -53,9 +53,15 @@ export class LeaguesComponent implements OnInit, OnDestroy {
       if (countryCodes.includes(countryCode)) {
         this.retrieveLeagueStanding(countryCode);
 
-        this.data$
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((league) => this.dataSource.next(league?.league.standings![0]!));
+        const sub = this.data$.pipe(takeUntil(this.destroy$)).subscribe((res) => {
+          if (res?.league.standings) {
+            this.dataSource.next(res.league.standings[0]);
+          } else {
+            console.error("Error retrieving data");
+          }
+        });
+
+        this.subs.push(sub);
       } else {
         this.unsupportedCountry = true;
       }
@@ -65,11 +71,13 @@ export class LeaguesComponent implements OnInit, OnDestroy {
   retrieveLeagueStanding(countryCode: string) {
     const leagueId = this.football.getLeagueFromCountry(countryCode);
 
-    this.sub = this.football.getLeagueStandings(leagueId).subscribe((res) => {
+    const sub = this.football.getLeagueStandings(leagueId).subscribe((res) => {
       if (res.response) {
         this.data$.next(res.response[0]);
       }
     });
+
+    this.subs.push(sub);
   }
 
   openTeamInfo(team: Team) {
