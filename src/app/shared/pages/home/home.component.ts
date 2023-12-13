@@ -1,70 +1,47 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { MatTabChangeEvent, MatTabsModule } from "@angular/material/tabs";
-import { BehaviorSubject, Subject, Subscription, takeUntil } from "rxjs";
+import { ActivatedRoute, Router, RouterModule } from "@angular/router";
 import { ScoresTableComponent } from "../../components/scores-table/scores-table.component";
 import { COUNTRIES } from "../../data/countries";
 import { FootballService } from "../../services/football.service";
-import { ResponsePayload, Standing, Team } from "../../types/api-football";
-import { Router } from "@angular/router";
+import { NumberInput } from "@angular/cdk/coercion";
 
 @Component({
   selector: "app-home",
   standalone: true,
-  imports: [CommonModule, MatTabsModule, ScoresTableComponent],
+  imports: [CommonModule, MatTabsModule, ScoresTableComponent, RouterModule],
   templateUrl: "./home.component.html",
   styleUrls: ["./home.component.scss"]
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit {
   countryList = Object.entries(COUNTRIES);
-  data$ = new BehaviorSubject<ResponsePayload | null>(null);
-  dataSource = new BehaviorSubject<Standing[]>([]);
-
-  private sub: Subscription | null = null;
-  private destroy$ = new Subject<boolean>();
+  selectedIndex: NumberInput = 0;
 
   constructor(
     private football: FootballService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    const countryCode = this.countryList[0][0];
+    const param = this.route.firstChild?.snapshot.paramMap.get("country");
 
-    this.retrieveLeagueStanding(countryCode);
+    if (param) {
+      const country = param.toUpperCase();
+      const countryCodes = Object.keys(COUNTRIES);
 
-    this.data$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((league) => this.dataSource.next(league?.league.standings![0]!));
+      const selectedIndex = countryCodes.indexOf(country);
+
+      if (selectedIndex !== -1) {
+        this.selectedIndex = selectedIndex;
+      }
+    }
   }
 
   tabChanged($event: MatTabChangeEvent) {
-    const countryCode = this.countryList[$event.index][0];
+    const country = this.countryList[$event.index][0].toLowerCase();
 
-    this.retrieveLeagueStanding(countryCode);
-  }
-
-  retrieveLeagueStanding(countryCode: string) {
-    const leagueId = this.football.getLeagueFromCountry(countryCode);
-
-    this.sub = this.football.getLeagueStandings(leagueId).subscribe((res) => {
-      if (res.response) {
-        this.data$.next(res.response[0]);
-      }
-    });
-  }
-
-  openTeamInfo(team: Team) {
-    // this.football.getLastTeamResults(team.id).subscribe(console.log);
-    this.router.navigate(["team", team.id]);
-  }
-
-  ngOnDestroy() {
-    if (this.sub) {
-      this.sub.unsubscribe();
-    }
-
-    this.destroy$.next(true);
-    this.destroy$.complete();
+    this.router.navigate([country], { relativeTo: this.route });
   }
 }

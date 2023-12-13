@@ -1,0 +1,9 @@
+<div class="main__content">
+  <app-scores-table
+    *ngIf="!unsupportedCountry; else unsupportedCountryBlock"
+    [dataSource]="(dataSource | async)!"
+    (teamNameClicked)="openTeamInfo($event)"
+  ></app-scores-table>
+</div>
+
+<ng-template #unsupportedCountryBlock>Country not supported. Please select one from the top menu</ng-template>

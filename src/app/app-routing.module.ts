@@ -5,18 +5,18 @@ const routes: Routes = [
   {
     path: "",
     pathMatch: "full",
-    redirectTo: "/home"
+    redirectTo: "/home/en"
   },
   {
     path: "home",
-    loadComponent: () => import("./shared/pages/home/home.component").then((m) => m.HomeComponent)
+    loadChildren: () => import("./shared/pages/home/home.module").then((m) => m.HomeModule)
   },
   {
     path: "team/:id",
     loadComponent: () => import("./shared/pages/team-info/team-info.component").then((m) => m.TeamInfoComponent)
   },
 
-  { path: "**", redirectTo: "/home" }
+  { path: "**", redirectTo: "/home/en" }
 ];
 
 @NgModule({
