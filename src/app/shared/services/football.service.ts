@@ -14,7 +14,12 @@ export class FootballService {
   private apiUrl = environment.apiUrl;
   private apiKey = environment.apiKey;
 
-  private apiPaths = { leagues: "/leagues", seasons: "/leagues/seasons", standings: "/standings" } as const;
+  private apiPaths = {
+    leagues: "/leagues",
+    seasons: "/leagues/seasons",
+    standings: "/standings",
+    fixtures: "/fixtures"
+  } as const;
 
   private currentHour = new Date().getHours();
   private currentYear = new Date().getFullYear();
@@ -102,5 +107,12 @@ export class FootballService {
     }
 
     return leagueId;
+  }
+
+  getLastTeamResults(teamId: number) {
+    return this.get(
+      this.apiPaths.fixtures,
+      new HttpParams({ fromObject: { season: this.currentYear, team: teamId } })
+    ).pipe(map((res) => (res.response ? res.response[0] : [])));
   }
 }

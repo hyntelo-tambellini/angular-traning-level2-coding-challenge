@@ -8,8 +8,6 @@
   </mat-tab-group>
 
   <div class="main__content">
-    <mat-card>
-      <mat-card-content>{{ league$ | async | json }} </mat-card-content>
-    </mat-card>
+    <app-scores-table [dataSource]="(dataSource | async)!"></app-scores-table>
   </div>
 </div>
