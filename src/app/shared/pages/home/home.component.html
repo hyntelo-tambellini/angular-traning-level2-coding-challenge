@@ -4,7 +4,11 @@
   [selectedIndex]="selectedIndex"
   (selectedTabChange)="tabChanged($event)"
 >
-  <mat-tab *ngFor="let country of countryList" [label]="country[1]"></mat-tab>
+  <mat-tab *ngFor="let country of countryList" [label]="country[1]">
+    <ng-template mat-tab-label>
+      <span [id]="country[1] + 'Select'"> {{ country[1] | titlecase }}</span>
+    </ng-template></mat-tab
+  >
 </mat-tab-group>
 
 <router-outlet></router-outlet>
