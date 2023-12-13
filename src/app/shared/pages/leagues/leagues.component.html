@@ -1,4 +1,4 @@
-<div class="main__content">
+<div style="padding: 20px">
   <app-scores-table
     *ngIf="!unsupportedCountry; else unsupportedCountryBlock"
     [dataSource]="(dataSource | async)!"

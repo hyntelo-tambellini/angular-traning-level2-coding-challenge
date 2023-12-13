@@ -9,6 +9,7 @@ export interface Response {
 
 export interface Parameters {
   season?: string;
+  team?: string;
   code?: string;
   id?: string;
 }
@@ -22,6 +23,10 @@ export interface ResponsePayload {
   league: League;
   country: Country;
   seasons?: SeasonsEntity[] | null;
+  fixture?: Fixture;
+  teams?: Goals;
+  goals?: Goals;
+  score?: Score;
 }
 
 export interface League {
@@ -99,9 +104,50 @@ export interface Coverage {
   odds: boolean;
 }
 
+export interface Fixture {
+  id: number;
+  referee: null | string;
+  timezone: string;
+  date: Date;
+  timestamp: number;
+  periods: Periods;
+  venue: Venue;
+  status: Status;
+}
+
 export interface Fixtures {
   events: boolean;
   lineups: boolean;
   statistics_fixtures: boolean;
   statistics_players: boolean;
+}
+
+export interface Venue {
+  id: number | null;
+  name: string;
+  city: string;
+}
+
+export interface Goals {
+  home: AwayClass | number | null;
+  away: AwayClass | number | null;
+}
+
+export interface AwayClass {
+  id: number;
+  name: string;
+  logo: string;
+  winner: boolean | null;
+}
+
+export interface Score {
+  halftime: Goals;
+  fulltime: Goals;
+  extratime: Goals;
+  penalty: Goals;
+}
+
+export interface Periods {
+  first: number | null;
+  second: number | null;
 }

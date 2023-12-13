@@ -1,0 +1,35 @@
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <ng-container matColumnDef="homeTeamLogo">
+    <td mat-cell *matCellDef="let fixture">
+      <img [src]="fixture.teams.home.logo" alt="home-team-logo" width="30" height="30" style="padding: 3px" />
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="homeTeamName">
+    <td mat-cell *matCellDef="let fixture"> {{ fixture.teams.home.name }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="homeTeamGoals">
+    <td mat-cell *matCellDef="let fixture"> {{ fixture.goals.home }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="separator">
+    <td mat-cell *matCellDef="let fixture"> - </td>
+  </ng-container>
+
+  <ng-container matColumnDef="awayTeamGoals">
+    <td mat-cell *matCellDef="let fixture"> {{ fixture.goals.away }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="awayTeamName">
+    <td mat-cell *matCellDef="let fixture"> {{ fixture.teams.away.name }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="awayTeamLogo">
+    <td mat-cell *matCellDef="let fixture">
+      <img [src]="fixture.teams.away.logo" alt="away-team-logo" width="30" height="30" style="padding: 3px" />
+    </td>
+  </ng-container>
+
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>

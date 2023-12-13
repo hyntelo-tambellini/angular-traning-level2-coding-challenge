@@ -113,6 +113,9 @@ export class FootballService {
     return this.get(
       this.apiPaths.fixtures,
       new HttpParams({ fromObject: { season: this.currentYear, team: teamId } })
-    ).pipe(map((res) => (res.response ? res.response[0] : [])));
+    ).pipe(
+      map((res) => res.response ?? []),
+      map((res) => res.slice(0, 10))
+    );
   }
 }

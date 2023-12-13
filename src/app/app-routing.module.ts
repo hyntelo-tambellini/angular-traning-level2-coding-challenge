@@ -12,7 +12,7 @@ const routes: Routes = [
     loadChildren: () => import("./shared/pages/home/home.module").then((m) => m.HomeModule)
   },
   {
-    path: "team/:id",
+    path: "team/:teamId",
     loadComponent: () => import("./shared/pages/team-info/team-info.component").then((m) => m.TeamInfoComponent)
   },
 

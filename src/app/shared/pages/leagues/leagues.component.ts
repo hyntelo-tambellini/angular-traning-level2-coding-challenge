@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { BehaviorSubject, Subject, Subscription, takeUntil } from "rxjs";
 import { ScoresTableComponent } from "src/app/shared/components/scores-table/scores-table.component";
@@ -14,14 +14,13 @@ import { ResponsePayload, Standing, Team } from "src/app/shared/types/api-footba
   templateUrl: "./leagues.component.html",
   styleUrls: ["./leagues.component.scss"]
 })
-export class LeaguesComponent implements OnInit {
+export class LeaguesComponent implements OnInit, OnDestroy {
   data$ = new BehaviorSubject<ResponsePayload | null>(null);
   dataSource = new BehaviorSubject<Standing[]>([]);
+  unsupportedCountry = false;
 
   private sub: Subscription | null = null;
   private destroy$ = new Subject<boolean>();
-
-  unsupportedCountry = false;
 
   constructor(
     private football: FootballService,
@@ -31,6 +30,15 @@ export class LeaguesComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(() => this.loadLeagueData());
+  }
+
+  ngOnDestroy() {
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
+
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
   loadLeagueData() {
@@ -65,7 +73,6 @@ export class LeaguesComponent implements OnInit {
   }
 
   openTeamInfo(team: Team) {
-    // this.football.getLastTeamResults(team.id).subscribe(console.log);
     this.router.navigate(["team", team.id]);
   }
 }

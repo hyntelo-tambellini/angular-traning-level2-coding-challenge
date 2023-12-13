@@ -19,8 +19,6 @@ export class ScoresTableComponent {
   @Input({ required: true }) dataSource: Standing[] = [];
   @Output() teamNameClicked = new EventEmitter<Team>();
 
-  constructor(private footballService: FootballService) {}
-
   manageTeamNameClick(standing: Standing) {
     this.teamNameClicked.emit(standing.team);
   }
