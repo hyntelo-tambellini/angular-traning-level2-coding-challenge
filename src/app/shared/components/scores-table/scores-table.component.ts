@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { MatTableModule } from "@angular/material/table";
 import { Standing, Team } from "../../types/api-football";
@@ -17,10 +17,11 @@ export class ScoresTableComponent {
   displayedColumns: string[] = ["rank", "logo", "name", "games", "wins", "losses", "draws", "goalsDiff", "points"];
 
   @Input({ required: true }) dataSource: Standing[] = [];
+  @Output() teamNameClicked = new EventEmitter<Team>();
 
   constructor(private footballService: FootballService) {}
 
-  openTeamInfo(standing: Standing) {
-    this.footballService.getLastTeamResults(standing.team.id).subscribe(console.log);
+  manageTeamNameClick(standing: Standing) {
+    this.teamNameClicked.emit(standing.team);
   }
 }

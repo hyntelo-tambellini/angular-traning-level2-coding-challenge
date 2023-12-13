@@ -1,0 +1,7 @@
+<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="center" (selectedTabChange)="tabChanged($event)">
+  <mat-tab *ngFor="let country of countryList" [label]="country[1]"></mat-tab>
+</mat-tab-group>
+
+<div class="main__content">
+  <app-scores-table [dataSource]="(dataSource | async)!" (teamNameClicked)="openTeamInfo($event)"></app-scores-table>
+</div>
